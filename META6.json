@@ -1,0 +1,28 @@
+{
+    "name": "Math::Optimization",
+    "description": "Mathematical optimization algorithms.",
+    "version": "0.0.1",
+    "authors": [
+        "Anton Antonov"
+    ],
+    "auth": "zef:antononcube",
+    "depends": [
+        "COIN-OR",
+        "Math::Matrix",
+        "Math::SparseMatrix"
+    ],
+    "build-depends": [],
+    "provides": {
+        "Math::Optimization": "lib/Math/Optimization.rakumod"
+    },
+    "license": "Artistic-2.0",
+    "tags": [
+        "coin",
+        "coin-or",
+        "optimization",
+        "linear-programming",
+        "linear-optimization"
+    ],
+    "api": "0",
+    "source-url": "https://github.com/antononcube/Raku-Math-Optimization.git"
+}
