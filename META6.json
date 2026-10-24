@@ -13,7 +13,8 @@
     ],
     "build-depends": [],
     "provides": {
-        "Math::Optimization": "lib/Math/Optimization.rakumod"
+        "Math::Optimization": "lib/Math/Optimization.rakumod",
+        "Math::Backends::COIN-OR": "lib/Math/Backends/COIN-OR.rakumod"
     },
     "license": "Artistic-2.0",
     "tags": [

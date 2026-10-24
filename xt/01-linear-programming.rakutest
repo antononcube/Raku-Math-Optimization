@@ -1,0 +1,30 @@
+use v6.d;
+use Test;
+use Math::Optimization;
+use Math::SparseMatrix;
+
+plan 11;
+
+is-deeply linear-programming([1, 1], [[1, 2],], [3]), [0e0, 1.5e0],
+    'solves default >= constraints with non-negative variables';
+is-deeply linear-programming([1, 1], [[1, 2],], [[3, 0],]), [0e0, 1.5e0],
+    'accepts equality constraint pairs';
+is-deeply linear-programming([1, 1], [[1, 2],], [3], [-1, -1]), [-1e0, 2e0],
+    'accepts a vector of lower bounds';
+is-deeply linear-programming([1, 1], [[1, 2],], [3], [[-1, 2], [-1, 1]]), [1e0, 1e0],
+    'accepts lower and upper bound pairs';
+is-deeply linear-programming([2, -3], [[-1, -2],], [[3, -1],], [[-Inf, 1], [-Inf, 1]]), [-5e0, 1e0],
+    'accepts <= constraint pairs';
+is-deeply linear-programming([2, 3], [[],], [], -1), [-1e0, -1e0],
+    'accepts a scalar lower bound without constraint rows';
+is-deeply linear-programming([1, 1], [[5, 2],], [3], Whatever, 'Integers'), [1e0, 0e0],
+    'supports integer domains';
+is-deeply linear-programming([1, 1], [[5, 2],], [3], Whatever, <Integers Reals>), [1e0, 0e0],
+    'supports mixed domains';
+my $sparse = Math::SparseMatrix.new(dense-matrix => [[1, 2],]);
+is-deeply linear-programming([1, 1], $sparse, [3]), [0e0, 1.5e0],
+    'accepts Math::SparseMatrix input';
+is-deeply linear-programming([1, 1], [[1, 2],], [3], tolerance => 1e-7), [0e0, 1.5e0],
+    'passes tolerance to the COIN-OR backend';
+throws-like { linear-programming([1], [[1, 2],], [1]) }, X::AdHoc,
+    'rejects rows with the wrong width';
