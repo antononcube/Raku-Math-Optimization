@@ -192,7 +192,7 @@ my $end = now;
 "Timing {$end - $start} s"
 ```
 ```
-# Timing 0.046694356 s
+# Timing 0.046603606 s
 ```
 
 ```raku
@@ -202,7 +202,7 @@ my $end = now;
 "Timing {$end - $start} s"
 ```
 ```
-# Timing 0.036762334 s
+# Timing 0.036862876 s
 ```
 
 ### Tolerance
@@ -216,7 +216,7 @@ my $end = now;
 "Timing {$end - $start} s"
 ```
 ```
-# Timing 0.035919332 s
+# Timing 0.035995874 s
 ```
 
 ```raku
@@ -226,7 +226,7 @@ my $end = now;
 "Timing {$end - $start} s"
 ```
 ```
-# Timing 0.034818997 s
+# Timing 0.035387664 s
 ```
 
 ---
@@ -269,7 +269,7 @@ my $end = now;
 "Timing {$end - $start} s"
 ```
 ```
-# Timing 0.002999923 s
+# Timing 0.003006215 s
 ```
 
 But with a larger matrices but the "simplex" and "interior-point" methods do not converge: 
