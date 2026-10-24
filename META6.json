@@ -1,7 +1,7 @@
 {
     "name": "Math::Optimization",
     "description": "Mathematical optimization algorithms.",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "authors": [
         "Anton Antonov"
     ],
@@ -12,9 +12,6 @@
         "Math::SparseMatrix"
     ],
     "build-depends": [],
-    "bin": [
-        "linear-programming"
-    ],
     "provides": {
         "Math::Optimization": "lib/Math/Optimization.rakumod",
         "Math::Backends::COIN-OR": "lib/Math/Backends/COIN-OR.rakumod"
