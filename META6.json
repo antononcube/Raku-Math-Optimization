@@ -12,6 +12,9 @@
         "Math::SparseMatrix"
     ],
     "build-depends": [],
+    "bin": [
+        "linear-programming"
+    ],
     "provides": {
         "Math::Optimization": "lib/Math/Optimization.rakumod",
         "Math::Backends::COIN-OR": "lib/Math/Backends/COIN-OR.rakumod"

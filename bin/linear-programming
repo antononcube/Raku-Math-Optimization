@@ -1,0 +1,19 @@
+#!/usr/bin/env raku
+use v6.d;
+
+use Math::Optimization;
+
+my %*SUB-MAIN-OPTS = :named-anywhere;
+
+#| Linear programming  
+sub MAIN(
+    Str:D $c, #= Raku code for the objective-coefficient vector.
+    Str:D $m, #= Raku code for the constraint matrix.
+    Str:D $b, #= Raku code for the right-hand-side vector or constraint pairs.
+    Str:D :$method, #= Method to use, one of "simplex", "dual-simplex", or "interior-point".
+) {
+    # The command deliberately accepts Raku expressions, so EVAL is required.
+    # Treat its three arguments as trusted input.
+    use MONKEY-SEE-NO-EVAL;
+    say linear-programming(EVAL($c), EVAL($m), EVAL($b), :$method).raku;
+}
