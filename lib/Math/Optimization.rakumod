@@ -143,12 +143,12 @@ sub linear-programming(
     my @domains = domains-data($domains, @c.elems);
 
     my %problem =
-        c => @c,
-        rows => @rows,
+        :@c,
+        :@rows,
         |%constraints,
         |%bounds,
-        domains => @domains,
-        method => $method;
+        :@domains,
+        :$method;
 
     %problem<tolerance> = $tolerance
     unless $tolerance ~~ Whatever;
