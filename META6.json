@@ -8,6 +8,7 @@
     "auth": "zef:antononcube",
     "depends": [
         "COIN-OR",
+        "Data::TypeSystem",
         "Math::Matrix",
         "Math::SparseMatrix"
     ],
