@@ -5,11 +5,10 @@ unit module Math::Optimization;
 use Math::Backends::COIN-OR;
 
 sub numeric-vector($value, Str:D $name --> Array:D) {
-    die "$name must be a positional collection" unless $value ~~ Positional:D;
+    die "$name must be a positional collection." unless $value ~~ Positional:D;
     my @result = $value.list.Array;
-    die "$name must contain only real numbers"
-        unless @result.all ~~ Real:D;
-    @result;
+    die "$name must contain only real numbers." unless @result.all ~~ Real:D;
+    return @result;
 }
 
 sub matrix-rows($matrix, Int:D $columns --> Array:D) {
@@ -19,23 +18,24 @@ sub matrix-rows($matrix, Int:D $columns --> Array:D) {
     my $dense = $matrix ~~ Positional:D
         ?? $matrix
         !! ($matrix.^can('Array') ?? $matrix.Array !! $matrix);
-    die 'm must be a positional matrix or provide an Array method'
-        unless $dense ~~ Positional:D;
+    die 'The first argument must be a positional matrix or provide an Array method.'
+    unless $dense ~~ Positional:D;
 
     my @rows;
-    for $dense.list.kv -> $row-number, $row {
-        die "row $row-number of m must be positional" unless $row ~~ Positional:D;
-        my @values = $row.list.Array;
-        die "row $row-number of m must contain only real numbers"
-            unless @values.all ~~ Real:D;
+    for $dense.kv -> $row-number, $row {
+        die "Row $row-number of m must be positional." unless $row ~~ Positional:D;
+
+        my @values = $row.Array;
+        die "Row $row-number of m must contain only real numbers." unless @values.all ~~ Real:D;
         @rows.push(@values);
     }
-    @rows.Array;
+
+    return @rows.Array;
 }
 
 sub constraint-data($value, Int:D $rows --> Hash:D) {
     die "b has {$value.elems} entries; expected $rows"
-        unless $value.elems == $rows;
+    unless $value.elems == $rows;
 
     my @rhs;
     my @senses;
@@ -56,7 +56,8 @@ sub constraint-data($value, Int:D $rows --> Hash:D) {
             @senses.push(1);
         }
     }
-    %(rhs => @rhs.Array, senses => @senses.Array);
+
+    return %(rhs => @rhs.Array, senses => @senses.Array);
 }
 
 sub bounds-data($value, Int:D $columns --> Hash:D) {
@@ -90,7 +91,7 @@ sub bounds-data($value, Int:D $columns --> Hash:D) {
         die "Upper bound $index must be real or Inf." unless @upper[$index] ~~ Real:D;
         die "Lower bound exceeds upper bound at index $index." if @lower[$index] > @upper[$index];
     }
-    %(lower => @lower.Array, upper => @upper.Array);
+    return %(lower => @lower.Array, upper => @upper.Array);
 }
 
 sub domains-data($value, Int:D $columns --> Array:D) {
