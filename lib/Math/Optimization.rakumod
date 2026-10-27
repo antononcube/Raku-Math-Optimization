@@ -6,7 +6,7 @@ use Math::Backends::COIN-OR;
 
 sub numeric-vector($value, Str:D $name --> Array:D) {
     die "$name must be a positional collection." unless $value ~~ Positional:D;
-    my @result = $value.list.Array;
+    my @result = $value.Array;
     die "$name must contain only real numbers." unless @result.all ~~ Real:D;
     return @result;
 }
@@ -39,14 +39,16 @@ sub constraint-data($value, Int:D $rows --> Hash:D) {
 
     my @rhs;
     my @senses;
-    for $value.list.kv -> $index, $constraint {
+    for $value.List.kv -> $index, $constraint {
         if $constraint ~~ Positional:D {
-            die "constraint $index must contain (rhs, sense)"
-                unless $constraint.elems == 2;
-            my ($rhs, $sense) = $constraint.list;
+            die "constraint $index must contain (rhs, sense)" unless $constraint.elems == 2;
+            my ($rhs, $sense) = $constraint.List;
+            
             die "right-hand side of constraint $index must be real" unless $rhs ~~ Real:D;
+            
             die "constraint sense at index $index must be 1, 0, or -1"
-                unless $sense ~~ Int:D && $sense == any(1, 0, -1);
+            unless $sense ~~ Int:D && $sense == any(1, 0, -1);
+            
             @rhs.push($rhs);
             @senses.push($sense);
         }
@@ -77,13 +79,13 @@ sub bounds-data($value, Int:D $columns --> Hash:D) {
         unless $value.elems == $columns;
 
         if $value.elems && $value[0] ~~ Positional:D {
-            for $value.list.kv -> $index, $bound {
+            for $value.List.kv -> $index, $bound {
                 die "bound $index must contain (lower, upper)" unless $bound.elems == 2;
-                (@lower[$index], @upper[$index]) = $bound.list;
+                (@lower[$index], @upper[$index]) = $bound.List;
             }
         }
         else {
-            @lower = $value.list.Array;
+            @lower = $value.Array;
         }
     }
     for ^$columns -> $index {
@@ -102,7 +104,7 @@ sub domains-data($value, Int:D $columns --> Array:D) {
         die "Domains has {$value.elems} entries; expected $columns."
         unless $value.elems == $columns;
 
-        $value.list.Array;
+        $value.Array;
     };
 
     die 'Domains must contain only Reals or Integers.'
