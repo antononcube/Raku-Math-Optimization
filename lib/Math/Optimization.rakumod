@@ -3,6 +3,8 @@ use v6.d;
 unit module Math::Optimization;
 
 use Math::Backends::COIN-OR;
+use Math::SparseMatrix;
+use Data::TypeSystem::Predicates;
 
 sub numeric-vector($value, Str:D $name --> Array:D) {
     die "$name must be a positional collection." unless $value ~~ Positional:D;
@@ -11,26 +13,17 @@ sub numeric-vector($value, Str:D $name --> Array:D) {
     return @result;
 }
 
-sub matrix-rows($matrix, Int:D $columns --> Array:D) {
-    # Both Math::Matrix and Math::SparseMatrix provide .Array.  Retaining this
-    # duck-typed conversion keeps those optional dependency types out of the
-    # public signatures.
-    my $dense = $matrix ~~ Positional:D
-        ?? $matrix
-        !! ($matrix.^can('Array') ?? $matrix.Array !! $matrix);
-    die 'The first argument must be a positional matrix or provide an Array method.'
-    unless $dense ~~ Positional:D;
 
-    my @rows;
-    for $dense.kv -> $row-number, $row {
-        die "Row $row-number of m must be positional." unless $row ~~ Positional:D;
+proto sub matrix-rows($matrix, Int:D $columns --> Array:D) {*}
 
-        my @values = $row.Array;
-        die "Row $row-number of m must contain only real numbers." unless @values.all ~~ Real:D;
-        @rows.push(@values);
-    }
+multi sub matrix-rows(Math::SparseMatrix:D $matrix, Int:D $columns --> Array:D) {
+    return matrix-rows($matrix.dense-matrix, $columns);
+}
 
-    return @rows.Array;
+multi sub matrix-rows(@matrix, Int:D $columns --> Array:D) {
+    # Should anything special be done here for optimization purposes?
+    # Can a sparse matrix be just handed over to COIN-OR, or whatever backend?
+    return @matrix;
 }
 
 sub constraint-data($value, Int:D $rows --> Hash:D) {
@@ -133,9 +126,11 @@ sub linear-programming(
     die 'Tolerance must be a positive real number or Whatever.'
     unless $tolerance ~~ Whatever || ($tolerance ~~ Real:D && $tolerance > 0);
 
+    die 'The second argument is expected to be a sparse matrix or a dense matrix.'
+    unless $m ~~ Math::SparseMatrix:D || is-matrix($m);
+
     my @rows = matrix-rows($m, @c.elems);
-    # [[],] is the documented sentinel for a problem that has bounds but no
-    # matrix constraints.
+    # [[],] is the documented sentinel for a problem that has bounds but no matrix constraints.
     @rows = [] if !$b.elems && @rows.elems == 1 && @rows[0].elems == 0;
     for @rows.kv -> $row-number, @row {
         die "Row $row-number of m has {@row.elems} entries; expected {@c.elems}."
