@@ -1,16 +1,16 @@
 {
     "name": "Math::Optimization",
     "description": "Mathematical optimization algorithms.",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "authors": [
         "Anton Antonov"
     ],
     "auth": "zef:antononcube",
     "depends": [
-        "COIN-OR",
-        "Data::TypeSystem",
+        "COIN-OR:ver<0.0.4>",
+        "Data::TypeSystem:ver<0.1.9>",
         "Math::Matrix",
-        "Math::SparseMatrix"
+        "Math::SparseMatrix:ver<0.0.16>"
     ],
     "build-depends": [],
     "provides": {
