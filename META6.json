@@ -7,10 +7,10 @@
     ],
     "auth": "zef:antononcube",
     "depends": [
-        "COIN-OR:ver<0.0.4>",
-        "Data::TypeSystem:ver<0.1.9>",
+        "COIN-OR:ver<0.0.4+>",
+        "Data::TypeSystem:ver<0.1.9+>",
         "Math::Matrix",
-        "Math::SparseMatrix:ver<0.0.16>"
+        "Math::SparseMatrix:ver<0.0.16+>"
     ],
     "build-depends": [],
     "provides": {
