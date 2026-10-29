@@ -14,15 +14,7 @@ sub numeric-vector($value, Str:D $name --> Array:D) {
 }
 
 
-proto sub matrix-rows($matrix, Int:D $columns --> Array:D) {*}
-
-multi sub matrix-rows(Math::SparseMatrix:D $matrix, Int:D $columns --> Array:D) {
-    return matrix-rows($matrix.dense-matrix, $columns);
-}
-
-multi sub matrix-rows(@matrix, Int:D $columns --> Array:D) {
-    # Should anything special be done here for optimization purposes?
-    # Can a sparse matrix be just handed over to COIN-OR, or whatever backend?
+sub dense-matrix-rows(@matrix, Int:D $columns --> Array:D) {
     return @matrix;
 }
 
@@ -129,24 +121,38 @@ sub linear-programming(
     die 'The second argument is expected to be a sparse matrix or a dense matrix.'
     unless $m ~~ Math::SparseMatrix:D || is-matrix($m);
 
-    my @rows = matrix-rows($m, @c.elems);
-    # [[],] is the documented sentinel for a problem that has bounds but no matrix constraints.
-    @rows = [] if !$b.elems && @rows.elems == 1 && @rows[0].elems == 0;
-    for @rows.kv -> $row-number, @row {
-        die "Row $row-number of m has {@row.elems} entries; expected {@c.elems}."
-        unless @row.elems == @c.elems;
+    my @rows;
+    my $row-count;
+    if $m ~~ Math::SparseMatrix:D {
+        die "m has {$m.ncol} columns; expected {@c.elems}."
+        unless $m.ncol == @c.elems;
+        $row-count = $m.nrow;
+    } else {
+        @rows = dense-matrix-rows($m, @c.elems);
+        # [[],] is the documented sentinel for a problem that has bounds but no matrix constraints.
+        @rows = [] if !$b.elems && @rows.elems == 1 && @rows[0].elems == 0;
+        for @rows.kv -> $row-number, @row {
+            die "Row $row-number of m has {@row.elems} entries; expected {@c.elems}."
+            unless @row.elems == @c.elems;
+        }
+        $row-count = @rows.elems;
     }
-    my %constraints = constraint-data($b, @rows.elems);
+    my %constraints = constraint-data($b, $row-count);
     my %bounds = bounds-data($bounds, @c.elems);
     my @domains = domains-data($domains, @c.elems);
 
     my %problem =
         :@c,
-        :@rows,
         |%constraints,
         |%bounds,
         :@domains,
         :$method;
+
+    if $m ~~ Math::SparseMatrix:D {
+        %problem<sparse-matrix> = $m;
+    } else {
+        %problem<rows> = @rows;
+    }
 
     %problem<tolerance> = $tolerance
     unless $tolerance ~~ Whatever;

@@ -3,7 +3,7 @@ use Test;
 use Math::Optimization;
 use Math::SparseMatrix;
 
-plan 11;
+plan 13;
 
 is-deeply linear-programming([1, 1], [[1, 2],], [3]), [0e0, 1.5e0],
     'solves default >= constraints with non-negative variables';
@@ -23,7 +23,12 @@ is-deeply linear-programming([1, 1], [[5, 2],], [3], Whatever, <Integers Reals>)
     'supports mixed domains';
 my $sparse = Math::SparseMatrix.new(dense-matrix => [[1, 2],]);
 is-deeply linear-programming([1, 1], $sparse, [3]), [0e0, 1.5e0],
-    'accepts Math::SparseMatrix input';
+    'loads Math::SparseMatrix input through COIN-OR';
+my $sparse-mixed = Math::SparseMatrix.new(dense-matrix => [[1, 0], [0, 1], [1, 1]]);
+is-deeply linear-programming([1, 2], $sparse-mixed, [[1, 1], [2, -1], [4, 0]]), [4e0, 0e0],
+    'uses CSC data for sparse equality, lower, and upper constraints';
+is-deeply linear-programming([1, 1], $sparse, [5], Whatever, 'Integers'), [1e0, 2e0],
+    'passes integer columns through sparse load-problem';
 is-deeply linear-programming([1, 1], [[1, 2],], [3], tolerance => 1e-7), [0e0, 1.5e0],
     'passes tolerance to the COIN-OR backend';
 throws-like { linear-programming([1], [[1, 2],], [1]) }, X::AdHoc,
